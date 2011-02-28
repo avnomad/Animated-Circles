@@ -9,61 +9,48 @@ using std::left;
 #include <cmath>
 #include <algorithm>
 using std::min;
+using std::swap;
 
 #include <GL/glew.h>
 #include <GL/glut.h>
 
 #define SEGMENTS 32
+#define ANIMATION_DURATION 150 /* frames*/
 #define PI 3.14159265358979323846264
 #define length(A) (sizeof(A)/sizeof((A)[0]))
 
+
+float curve[][4] = {{1,0,0,1},{0.70711,0.70711,0,0.70711},{0,1,0,1}};	// circle
+unsigned int current_frame = 0;
+float w_endpoints[2] = {0.70711,1};
+float xy_endpoints[2] = {1,0.5};
+
 void display()
 {
-	float circle[][4] = {{1,0,0,1},{0.70711,0.70711,0,0.70711},{0,1,0,1}};
-	float line1[][4] = {{0,0,0,1},{0.35355,0,0,0.70711},{1,0,0,1}};
-	float line2[][4] = {{0,0,0,1},{0.5,0,0,1},{1,0,0,1}};
-
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// draw circle quadrant with rational Bezier
-	glPushMatrix();
-		glTranslatef(45,45,0);
-		glScalef(50,50,0);
+	if(current_frame >= ANIMATION_DURATION)
+	{
+		current_frame = 0;
+		swap(w_endpoints[0],w_endpoints[1]);
+		swap(xy_endpoints[0],xy_endpoints[1]);
+	} // end if
 
-		glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,3,&circle[0][0]);
+	float t = (float)current_frame/ANIMATION_DURATION;
+	//curve[1][3] = t*w_endpoints[1] + (1-t)*w_endpoints[0];
+	curve[1][0] = curve[1][1] = (t*xy_endpoints[1] + (1-t)*xy_endpoints[0])*curve[1][3];
+	current_frame++;
+
+
+	// draw shape
+	glPushMatrix();
+	for(int i = 0 ; i < 360 ; i += 90)
+	{
+		glRotatef(i,0,0,1);	// in degrees
+		glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curve),&curve[0][0]);
 		glEvalMesh1(GL_LINE,0,SEGMENTS);
+	} // end for
 	glPopMatrix();
-
-	// again with sine/cosine
-	glPushMatrix();
-		glTranslatef(40,40,0);
-		glScalef(50,50,0);
-
-		glBegin(GL_LINE_STRIP);
-			for(int i = 0 ; i <= SEGMENTS ; ++i)
-				glVertex2f(cos(PI/2*i/SEGMENTS),sin(PI/2*i/SEGMENTS));
-		glEnd();
-	glPopMatrix();
-
-	glDisable(GL_MULTISAMPLE);
-	// draw straight line with rational Bezier and same weights as circle
-	glPushMatrix();
-		glTranslatef(40,35,0);
-		glScalef(50,50,0);
-
-		glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,3,&line1[0][0]);
-		glEvalMesh1(GL_POINT,0,SEGMENTS);
-	glPopMatrix();
-
-	// draw straight line with rational Bezier and unit weights
-	glPushMatrix();
-		glTranslatef(40,30,0);
-		glScalef(50,50,0);
-
-		glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,3,&line2[0][0]);
-		glEvalMesh1(GL_POINT,0,SEGMENTS);
-	glPopMatrix();
-	glEnable(GL_MULTISAMPLE);
 
 	glutPostRedisplay();
 	glutSwapBuffers();
@@ -100,15 +87,15 @@ int main(int argc, char **argv)
 
 	// OpenGL initialization
 	glMatrixMode(GL_PROJECTION);
-		gluOrtho2D(0,100,0,100);
+		gluOrtho2D(-1,1,-1,1);
 	glMatrixMode(GL_MODELVIEW);
-	glColor3f(1.0,0.75,0.0);
+	glColor3f(0.0,0.25,1.0);	// azure
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_MAP1_VERTEX_4);
 	glEnable(GL_MAP1_COLOR_4);
 	glMapGrid1f(SEGMENTS,0.0,1.0);
-	float colorCurve[][4] = {{1,0.75,0,1},{1,0.75,0,-2},{1,0.75,0,4},{1,0.75,0,-2},{1,0.75,0,1}};
+	float colorCurve[][4] = {{1,0.75,0,1},/*{1,0.75,0,-2},*/{1,0.75,0,4},/*{1,0.75,0,-2},*/{1,0.75,0,1}};
 	glMap1f(GL_MAP1_COLOR_4,0,1,4,length(colorCurve),&colorCurve[0][0]);
 
 	// application initialization
