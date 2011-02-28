@@ -36,8 +36,9 @@ void display()
 		swap(xy_endpoints[0],xy_endpoints[1]);
 	} // end if
 
-	float t = (float)current_frame/ANIMATION_DURATION;
-	//curve[1][3] = t*w_endpoints[1] + (1-t)*w_endpoints[0];
+	float t = 0.5*cos(PI*current_frame/ANIMATION_DURATION+PI)+0.5;
+	//t = 0.5*cos(PI*t+PI)+0.5;
+	curve[1][3] = t*w_endpoints[1] + (1-t)*w_endpoints[0];
 	curve[1][0] = curve[1][1] = (t*xy_endpoints[1] + (1-t)*xy_endpoints[0])*curve[1][3];
 	current_frame++;
 
