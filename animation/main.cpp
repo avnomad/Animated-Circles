@@ -15,6 +15,7 @@ using std::min;
 
 #define SEGMENTS 32
 #define PI 3.14159265358979323846264
+#define length(A) (sizeof(A)/sizeof((A)[0]))
 
 void display()
 {
@@ -102,8 +103,13 @@ int main(int argc, char **argv)
 		gluOrtho2D(0,100,0,100);
 	glMatrixMode(GL_MODELVIEW);
 	glColor3f(1.0,0.75,0.0);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_MAP1_VERTEX_4);
+	glEnable(GL_MAP1_COLOR_4);
 	glMapGrid1f(SEGMENTS,0.0,1.0);
+	float colorCurve[][4] = {{1,0.75,0,1},{1,0.75,0,-2},{1,0.75,0,4},{1,0.75,0,-2},{1,0.75,0,1}};
+	glMap1f(GL_MAP1_COLOR_4,0,1,4,length(colorCurve),&colorCurve[0][0]);
 
 	// application initialization
 
