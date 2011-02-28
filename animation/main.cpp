@@ -6,27 +6,36 @@ using std::cerr;
 using std::clog;
 using std::left;
 
+#include <cmath>
+
 #include <GL/glew.h>
 #include <GL/glut.h>
 
+#define SEGMENTS 32
+#define PI 3.14159265358979323846264
 
 void display()
 {
-	float curve[][4] = {{100,0,0,1},{100,100,0,1},{0,200,0,2}};
+	float curve[][4] = {{1,0,0,1},{0.70711,0.70711,0,0.70711},{0,1,0,1}};
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glBegin(GL_LINES);
-		glVertex2i(10,100);
-		glVertex2i(100,10);
-	glEnd();
+	glLoadIdentity();
+	glTranslatef(50,50,0);
+	glScalef(100,100,0);
 
 	glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,3,&curve[0][0]);
-	glBegin(GL_LINES);
-		for(float x = 0.0 ; x <= 1.0 ; x += 0.125)
-			glEvalCoord1f(x);
+	glEvalMesh1(GL_POINT,0,SEGMENTS);
+
+	glLoadIdentity();
+	glTranslatef(45,45,0);
+	glScalef(100,100,0);
+
+	glBegin(GL_POINTS);
+		for(int i = 0 ; i <= SEGMENTS ; ++i)
+			glVertex2f(cos(PI/2*i/SEGMENTS),sin(PI/2*i/SEGMENTS));
 	glEnd();
 
-	//glutPostRedisplay();
+	glutPostRedisplay();
 	glutSwapBuffers();
 } // end function display
 
@@ -64,8 +73,10 @@ int main(int argc, char **argv)
 	glewInit();
 
 	// OpenGL initialization
+	glEnable(GL_BLEND);
 	glColor3f(1.0,0.75,0.0);
 	glEnable(GL_MAP1_VERTEX_4);
+	glMapGrid1f(SEGMENTS,0.0,1.0);
 
 	// application initialization
 
