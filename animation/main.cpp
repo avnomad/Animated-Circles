@@ -12,9 +12,21 @@ using std::left;
 
 void display()
 {
+	float curve[][4] = {{100,0,0,1},{100,100,0,1},{0,200,0,2}};
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	glBegin(GL_LINES);
+		glVertex2i(10,100);
+		glVertex2i(100,10);
+	glEnd();
 
+	glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,3,&curve[0][0]);
+	glBegin(GL_LINES);
+		for(float x = 0.0 ; x <= 1.0 ; x += 0.125)
+			glEvalCoord1f(x);
+	glEnd();
+
+	//glutPostRedisplay();
 	glutSwapBuffers();
 } // end function display
 
@@ -32,6 +44,10 @@ void keyboard(unsigned char key, int x, int y)
 void reshape(int w, int h)
 {
 	glViewport(0,0,w,h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0,w,0,h);
+	glMatrixMode(GL_MODELVIEW);
 } // end function reshape
 
 
