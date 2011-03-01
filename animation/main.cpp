@@ -20,17 +20,16 @@ using std::swap;
 #define ROOT2 1.41421356237309504880
 #define length(A) (sizeof(A)/sizeof((A)[0]))
 
-
-float curve[][4] = {{1,0,0,1},{0.70711,0.70711,0,0.70711},{0,1,0,1}};	// 1/4th of circle
-
-unsigned int current_frame = 0;
-float w_endpoints[2] = {0.70711,1};
-float xy_endpoints[2] = {1,0.5};
-
 float curveUp[][4] = {{0,1,0,1},{ROOT2/4,(ROOT2+2)/4,0,(ROOT2+2)/4},{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4}};
-float curveDown[][4] = {{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4},{(ROOT2+2)/4,ROOT2/4,0,(ROOT2+2)/4},{1,0,0,1}};
+float curveDown[][4] = {{1,0,0,1},{(ROOT2+2)/4,ROOT2/4,0,(ROOT2+2)/4},{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4}};
+unsigned int current_frame = 0;
+float w_endpoints[2] = {(ROOT2+2)/4,1};
+float xy_endpoints[2] = {(ROOT2+1)/4,1};
 
-
+float curveUp2[][4] = {{0,1,0,1},{ROOT2/4,(ROOT2+2)/4,0,(ROOT2+2)/4},{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4}};
+float curveDown2[][4] = {{1,0,0,1},{(ROOT2+2)/4,ROOT2/4,0,(ROOT2+2)/4},{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4}};
+float w_endpoints2[2] = {(ROOT2+2)/4,1};
+float xy_endpoints2[2] = {ROOT2/2,1};
 
 void display()
 {
@@ -41,12 +40,16 @@ void display()
 		current_frame = 0;
 		swap(w_endpoints[0],w_endpoints[1]);
 		swap(xy_endpoints[0],xy_endpoints[1]);
+		swap(w_endpoints2[0],w_endpoints2[1]);
+		swap(xy_endpoints2[0],xy_endpoints2[1]);
 	} // end if
 
 	float t = 0.5*cos(PI*current_frame/ANIMATION_DURATION+PI)+0.5;
 	//t = 0.5*cos(PI*t+PI)+0.5;
-	curve[1][3] = t*w_endpoints[1] + (1-t)*w_endpoints[0];
-	curve[1][0] = curve[1][1] = (t*xy_endpoints[1] + (1-t)*xy_endpoints[0])*curve[1][3];
+	curveDown[2][3] = curveUp[2][3] = t*w_endpoints[1] + (1-t)*w_endpoints[0];
+	curveDown[2][0] = curveDown[2][1] = curveUp[2][0] = curveUp[2][1] = (t*xy_endpoints[1] + (1-t)*xy_endpoints[0]);
+	curveDown2[2][3] = curveUp2[2][3] = t*w_endpoints2[1] + (1-t)*w_endpoints2[0];
+	curveDown2[2][0] = curveDown2[2][1] = curveUp2[2][0] = curveUp2[2][1] = (t*xy_endpoints2[1] + (1-t)*xy_endpoints2[0])*curveUp2[2][3];
 	current_frame++;
 
 
@@ -55,33 +58,41 @@ void display()
 	{
 		glPushMatrix();
 			glRotatef(i,0,0,1);	// in degrees
-			glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curve),&curve[0][0]);
+			// draw up segment
+			glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveUp),&curveUp[0][0]);
 			glEvalMesh1(GL_LINE,0,SEGMENTS);
+			glBegin(GL_POINTS);
+				for(int i = 0 ; i < length(curveUp) ; ++i)
+					glVertex4fv(curveUp[i]);
+			glEnd();
+			// draw down segment
+			glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveDown),&curveDown[0][0]);
+			glEvalMesh1(GL_LINE,0,SEGMENTS);
+			glBegin(GL_POINTS);
+				for(int i = 0 ; i < length(curveDown) ; ++i)
+					glVertex4fv(curveDown[i]);
+			glEnd();
+
+
+			// draw up segment
+			glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveUp2),&curveUp2[0][0]);
+			glEvalMesh1(GL_LINE,0,SEGMENTS);
+			//glBegin(GL_POINTS);
+			//	for(int i = 0 ; i < length(curveUp2) ; ++i)
+			//		glVertex4fv(curveUp2[i]);
+			//glEnd();
+			// draw down segment
+			glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveDown2),&curveDown2[0][0]);
+			glEvalMesh1(GL_LINE,0,SEGMENTS);
+			//glBegin(GL_POINTS);
+			//	for(int i = 0 ; i < length(curveDown2) ; ++i)
+			//		glVertex4fv(curveDown2[i]);
+			//glEnd();
 		glPopMatrix();
 	} // end for
 
-	glPushMatrix();
-		glTranslatef(0.01,0.02,0);
-		glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveUp),&curveUp[0][0]);
-		glEvalMesh1(GL_POINT,0,SEGMENTS);
-		glColor3f(0,0.75,0);	// green
-		glBegin(GL_POINTS);
-			for(int i = 0 ; i < length(curveUp) ; ++i)
-				glVertex4fv(curveUp[i]);
-		glEnd();
-	glPopMatrix();
-	glPushMatrix();
-		glTranslatef(0.02,0.01,0);
-		glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveDown),&curveDown[0][0]);
-		glEvalMesh1(GL_POINT,0,SEGMENTS);
-		glColor3f(0.0,0.25,1.0);	// azure
-		glBegin(GL_POINTS);
-			for(int i = 0 ; i < length(curveDown) ; ++i)
-				glVertex4fv(curveDown[i]);
-		glEnd();
-	glPopMatrix();
 
-
+	// check for errors
 	GLenum error;
 	if((error = glGetError()) != GL_NO_ERROR)
 		cerr << gluErrorString(error) << endl;
