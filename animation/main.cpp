@@ -56,10 +56,10 @@ void display()
 			glRotatef(i,0,0,1);	// in degrees
 			// draw up segment
 			glMap2f(GL_MAP2_VERTEX_4,0.0,1.0,4,length(curveUp[0]),0.0,1.0,length(curveUp[0])*4,length(curveUp),&curveUp[0][0][0]);
-			glEvalMesh2(GL_LINE,0,SEGMENTS,0,1);
+			glEvalMesh2(GL_FILL,0,SEGMENTS,0,1);
 			// draw down segment
 			glMap2f(GL_MAP2_VERTEX_4,0.0,1.0,4,length(curveDown[0]),0.0,1.0,length(curveDown[0])*4,length(curveDown),&curveDown[0][0][0]);
-			glEvalMesh2(GL_LINE,0,SEGMENTS,0,1);
+			glEvalMesh2(GL_FILL,0,SEGMENTS,0,1);
 		glPopMatrix();
 	} // end for
 
@@ -106,7 +106,8 @@ int main(int argc, char **argv)
 		gluOrtho2D(-1.1,1.1,-1.1,1.1);
 	glMatrixMode(GL_MODELVIEW);
 	glPointSize(5);
-	glColor3f(0.0,0.25,1.0);	// azure
+	glColor3f(1.0,0.75,0.0);	// gold
+	//glColor3f(0.0,0.25,1.0);	// azure
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_MAP2_VERTEX_4);
