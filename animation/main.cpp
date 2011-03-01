@@ -20,7 +20,7 @@ using std::swap;
 #define ROOT2 1.41421356237309504880
 #define length(A) (sizeof(A)/sizeof((A)[0]))
 
-float curveUp[][4] = {{0,1,0,1},{ROOT2/4,(ROOT2+2)/4,0,(ROOT2+2)/4},{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4}};
+float curveUp[][4] = {{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4},{ROOT2/4,(ROOT2+2)/4,0,(ROOT2+2)/4},{0,1,0,1}};
 float curveDown[][4] = {{1,0,0,1},{(ROOT2+2)/4,ROOT2/4,0,(ROOT2+2)/4},{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4}};
 unsigned int current_frame = 0;
 float w_endpoints[2] = {(ROOT2+2)/4,1};
@@ -41,8 +41,8 @@ void display()
 
 	float t = 0.5*cos(PI*current_frame/ANIMATION_DURATION+PI)+0.5;
 	//t = 0.5*cos(PI*t+PI)+0.5;
-	curveDown[2][3] = curveUp[2][3] = t*w_endpoints[1] + (1-t)*w_endpoints[0];
-	curveDown[2][0] = curveDown[2][1] = curveUp[2][0] = curveUp[2][1] = (t*xy_endpoints[1] + (1-t)*xy_endpoints[0])*curveDown[2][3];
+	curveDown[2][3] = curveUp[0][3] = t*w_endpoints[1] + (1-t)*w_endpoints[0];
+	curveDown[2][0] = curveDown[2][1] = curveUp[0][0] = curveUp[0][1] = (t*xy_endpoints[1] + (1-t)*xy_endpoints[0])*curveDown[2][3];
 	curveDown[1][1] = curveUp[1][0] = (t*mid_endpoints[1] + (1-t)*mid_endpoints[0])*curveUp[1][3];
 	current_frame++;
 
