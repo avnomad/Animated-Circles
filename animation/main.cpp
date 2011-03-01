@@ -54,22 +54,10 @@ void display()
 			glRotatef(i,0,0,1);	// in degrees
 			// draw up segment
 			glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveUp),&curveUp[0][0]);
-			glEvalMesh1(GL_POINT,0,SEGMENTS);
-			glBegin(GL_POINTS);
-				for(int i = 0 ; i < length(curveUp) ; ++i)
-					glVertex4fv(curveUp[i]);
-			glEnd();
+			glEvalMesh1(GL_LINE,0,SEGMENTS);
 			// draw down segment
 			glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveDown),&curveDown[0][0]);
-			glEvalMesh1(GL_POINT,0,SEGMENTS);
-			glBegin(GL_POINTS);
-				for(int i = 0 ; i < length(curveDown) ; ++i)
-					glVertex4fv(curveDown[i]);
-			glEnd();
-			glBegin(GL_LINES);
-				glVertex4fv(curveUp[1]);
-				glVertex4fv(curveDown[1]);
-			glEnd();
+			glEvalMesh1(GL_LINE,0,SEGMENTS);
 		glPopMatrix();
 	} // end for
 
