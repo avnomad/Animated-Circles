@@ -17,13 +17,20 @@ using std::swap;
 #define SEGMENTS 32
 #define ANIMATION_DURATION 150 /* frames*/
 #define PI 3.14159265358979323846264
+#define ROOT2 1.41421356237309504880
 #define length(A) (sizeof(A)/sizeof((A)[0]))
 
 
-float curve[][4] = {{1,0,0,1},{0.70711,0.70711,0,0.70711},{0,1,0,1}};	// circle
+float curve[][4] = {{1,0,0,1},{0.70711,0.70711,0,0.70711},{0,1,0,1}};	// 1/4th of circle
+
 unsigned int current_frame = 0;
 float w_endpoints[2] = {0.70711,1};
 float xy_endpoints[2] = {1,0.5};
+
+float curveUp[][4] = {{0,1,0,1},{ROOT2/4,(ROOT2+2)/4,0,(ROOT2+2)/4},{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4}};
+float curveDown[][4] = {{(ROOT2+1)/4,(ROOT2+1)/4,0,(ROOT2+2)/4},{(ROOT2+2)/4,ROOT2/4,0,(ROOT2+2)/4},{1,0,0,1}};
+
+
 
 void display()
 {
@@ -44,15 +51,40 @@ void display()
 
 
 	// draw shape
-	glPushMatrix();
 	for(int i = 0 ; i < 360 ; i += 90)
 	{
-		glRotatef(i,0,0,1);	// in degrees
-		glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curve),&curve[0][0]);
-		glEvalMesh1(GL_LINE,0,SEGMENTS);
+		glPushMatrix();
+			glRotatef(i,0,0,1);	// in degrees
+			glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curve),&curve[0][0]);
+			glEvalMesh1(GL_LINE,0,SEGMENTS);
+		glPopMatrix();
 	} // end for
+
+	glPushMatrix();
+		glTranslatef(0.01,0.02,0);
+		glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveUp),&curveUp[0][0]);
+		glEvalMesh1(GL_POINT,0,SEGMENTS);
+		glColor3f(0,0.75,0);	// green
+		glBegin(GL_POINTS);
+			for(int i = 0 ; i < length(curveUp) ; ++i)
+				glVertex4fv(curveUp[i]);
+		glEnd();
+	glPopMatrix();
+	glPushMatrix();
+		glTranslatef(0.02,0.01,0);
+		glMap1f(GL_MAP1_VERTEX_4,0.0,1.0,4,length(curveDown),&curveDown[0][0]);
+		glEvalMesh1(GL_POINT,0,SEGMENTS);
+		glColor3f(0.0,0.25,1.0);	// azure
+		glBegin(GL_POINTS);
+			for(int i = 0 ; i < length(curveDown) ; ++i)
+				glVertex4fv(curveDown[i]);
+		glEnd();
 	glPopMatrix();
 
+
+	GLenum error;
+	if((error = glGetError()) != GL_NO_ERROR)
+		cerr << gluErrorString(error) << endl;
 	glutPostRedisplay();
 	glutSwapBuffers();
 } // end function display
@@ -88,8 +120,9 @@ int main(int argc, char **argv)
 
 	// OpenGL initialization
 	glMatrixMode(GL_PROJECTION);
-		gluOrtho2D(-1,1,-1,1);
+		gluOrtho2D(-1.1,1.1,-1.1,1.1);
 	glMatrixMode(GL_MODELVIEW);
+	glPointSize(5);
 	glColor3f(0.0,0.25,1.0);	// azure
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
