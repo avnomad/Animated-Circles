@@ -14,7 +14,6 @@ using std::swap;
 #include <GL/glew.h>
 #include <GL/glut.h>
 
-#define SLICES 128
 #define ANIMATION_DURATION 150 /* frames*/
 #define PI 3.14159265358979323846264
 #define length(A) (sizeof(A)/sizeof((A)[0]))
@@ -55,7 +54,7 @@ void display()
 		glVertex2f(-y1,x1);
 		glVertex2f(-y2,x2);
 	glEnd();
-	gluPartialDisk(arc,1,1,SLICES,1,degrees,2*(180-degrees));
+	gluPartialDisk(arc,1,1,(180-degrees)/2,1,degrees,2*(180-degrees));
 
 	// check for errors
 	GLenum error;
