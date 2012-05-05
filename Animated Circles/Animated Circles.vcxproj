@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{49BD8CDC-0855-40C0-9996-9C6ADCB04719}</ProjectGuid>
-    <RootNamespace>animation</RootNamespace>
+    <RootNamespace>AnimatedCircles</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
